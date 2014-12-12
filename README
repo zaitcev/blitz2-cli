@@ -1,0 +1,44 @@
+The blitz2-cli is a couple of primitive shell scripts that implement
+the blitz2 protocol. The blitz2u uploads your X11 clipboard to the server,
+and the blitz2d downloads it.
+
+Current implementation only works with a private HTTP server.
+The TLS certificates are not verified.
+
+Installation
+------------
+
+Copy blitz2u and blitz2d to ~/bin/ or /usr/local/bin, blitz2.conf to
+~/config/blitz2/. Edit to suit.
+
+Configuring Apache
+------------------
+
+Basically you want a webserver that allows uploads to a specified URL
+with so-called "HTTP Basic" authentication.
+
+First, create a protected directory and a password:
+
+ [root@takane conf]# ls -la /var/www/html/protected/
+ total 12
+ drwxr-xr-x 2 apache root   4096 Sep 13 19:18 .
+ drwxr-xr-x 3 root   root   4096 Sep  3 08:58 ..
+ -rw-r--r-- 1 apache apache    4 Sep 13 19:18 test1
+ [root@takane conf]# cat /etc/htpasswd 
+ blitzer:$apr1$EPQVDeJm$/znC/u1rXPy4sfv0lN0i41
+ [root@takane conf]# 
+
+Second, edit http.conf and add the following:
+
+ # Add a protected directory (used by blitz2)
+ <Directory "/var/www/html/protected">
+   AuthType Basic
+   AuthName "Authentication Required"
+   AuthUserFile "/etc/htpasswd"
+   Require valid-user
+
+   Order allow,deny
+   Allow from all
+
+   Dav On
+ </Directory>

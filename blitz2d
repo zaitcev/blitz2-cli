@@ -1,0 +1,43 @@
+#!/bin/sh
+# blitz2d: Download the clipboard from a certain URL
+
+blitzchunk=$HOME/blitz-chunk
+
+touch $blitzchunk
+chmod 600 $blitzchunk
+
+if [ -f /usr/bin/xsel ]; then
+  xcmd="/usr/bin/xsel -n -b -i"
+elif [ -f /usr/bin/xclip ]; then
+  xcmd="/usr/bin/xclip -quiet -selection clipboard /dev/fd/0"
+else
+  echo "blitz2d: No xsel nor xclip" >&2
+  exit 1
+fi
+if [ \! -f /usr/bin/curl ]; then
+  echo "blitz2d: No curl" >&2
+  exit 1
+fi
+
+if [ "$#" != 0 ]; then
+  echo "Usage: blitz2d" >&2
+  exit 1
+fi
+
+if [ -f ~/.config/blitz2/blitz2.conf ]; then
+  . ~/.config/blitz2/blitz2.conf
+elif [ -f /etc/blitz2.conf ]; then
+  . /etc/blitz2.conf
+else
+  echo "blitz2d: No ~/.config/blitz2/blitz2.conf or /etc/blitz2.conf" >&2
+  exit 1
+fi
+
+# Use a file for trace / debugging. A pipe is too anonymous.
+curl -s -S -f -k "$URL" > "$blitzchunk"
+# 
+# The xclip places itself into background by default, but does not daemonize
+# correctly, so ssh hangs. Therefore, we background it by hand from shell.
+# The option -quiet makes xclip to run in the foreground (see above).
+# Not sure if xsel daemonizes correctly, but we use bash anyway.
+DISPLAY=:0.0 $xcmd <$blitzchunk >/dev/null 2>&1 &

@@ -1,0 +1,32 @@
+#!/bin/sh
+# blitz2u: Upload the clipboard to a certain URL with WebDAV
+
+if [ -f /usr/bin/xsel ]; then
+  xcmd="/usr/bin/xsel -b -o"
+elif [ -f /usr/bin/xclip ]; then
+  xcmd="/usr/bin/xclip -selection clipboard -o"
+else
+  echo "blitz2u: No xsel nor xclip" >&2
+  exit 1
+fi
+if [ \! -f /usr/bin/curl ]; then
+  echo "blitz2u: No curl" >&2
+  exit 1
+fi
+
+if [ "$#" != 0 ]; then
+  echo "Usage: blitz2u" >&2
+  exit 1
+fi
+
+if [ -f ~/.config/blitz2/blitz2.conf ]; then
+  . ~/.config/blitz2/blitz2.conf
+elif [ -f /etc/blitz2.conf ]; then
+  . /etc/blitz2.conf
+else
+  echo "blitz2u: No ~/.config/blitz2/blitz2.conf or /etc/blitz2.conf" >&2
+  exit 1
+fi
+
+# exec $xcmd | /usr/bin/ssh "$1" blitz
+exec $xcmd | curl -k -T - "$URL"
