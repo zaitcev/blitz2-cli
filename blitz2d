@@ -33,8 +33,23 @@ else
   exit 1
 fi
 
+if [ \! -n "$URL" ]; then
+  echo "blitz2d: No URL in blitz2.conf" >&2
+  exit 1
+fi
+
+if [ -n "$CACERT" ]; then
+  ccmd="/usr/bin/curl --cacert $CACERT"
+elif [ -n "$SSCERT" ]; then
+  ccmd="/usr/bin/curl -E $SSCERT"
+elif [ -n "$NOCERT" ]; then
+  ccmd="/usr/bin/curl -k"
+else
+  ccmd="/usr/bin/curl"
+fi
+
 # Use a file for trace / debugging. A pipe is too anonymous.
-curl -s -S -f -k "$URL" > "$blitzchunk"
+$ccmd -s -S -f "$URL" > "$blitzchunk"
 # 
 # The xclip places itself into background by default, but does not daemonize
 # correctly, so ssh hangs. Therefore, we background it by hand from shell.

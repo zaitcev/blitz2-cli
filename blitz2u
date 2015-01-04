@@ -28,5 +28,19 @@ else
   exit 1
 fi
 
-# exec $xcmd | /usr/bin/ssh "$1" blitz
-exec $xcmd | curl -k -T - "$URL"
+if [ \! -n "$URL" ]; then
+  echo "blitz2u: No URL in blitz2.conf" >&2
+  exit 1
+fi
+
+if [ -n "$CACERT" ]; then
+  ccmd="/usr/bin/curl --cacert $CACERT"
+elif [ -n "$SSCERT" ]; then
+  ccmd="/usr/bin/curl -E $SSCERT"
+elif [ -n "$NOCERT" ]; then
+  ccmd="/usr/bin/curl -k"
+else
+  ccmd="/usr/bin/curl"
+fi
+
+exec $xcmd | $ccmd -T - "$URL"

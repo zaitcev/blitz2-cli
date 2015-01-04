@@ -2,14 +2,17 @@ The blitz2-cli is a couple of primitive shell scripts that implement
 the blitz2 protocol. The blitz2u uploads your X11 clipboard to the server,
 and the blitz2d downloads it.
 
-Current implementation only works with a private HTTP server.
-The TLS certificates are not verified.
+Current implementation only works with a private HTTP server. Amazon S3,
+Rackspace CF, and other such data stores are not supported at this time.
 
 Installation
 ------------
 
 Copy blitz2u and blitz2d to ~/bin/ or /usr/local/bin, blitz2.conf to
 ~/config/blitz2/. Edit to suit.
+
+Remember that this utility relies on so-called "HTTP Basic" authentication,
+which must be protected with TLS on the open Internet.
 
 Configuring Apache
 ------------------
