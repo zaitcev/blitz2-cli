@@ -9,7 +9,7 @@ Installation
 ------------
 
 Copy blitz2u and blitz2d to ~/bin/ or /usr/local/bin, blitz2.conf to
-~/config/blitz2/. Edit to suit.
+~/.config/blitz2/. Edit to suit.
 
 Remember that this utility relies on so-called "HTTP Basic" authentication,
 which must be protected with TLS on the open Internet.
